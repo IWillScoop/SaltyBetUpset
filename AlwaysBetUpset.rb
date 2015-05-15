@@ -10,6 +10,7 @@
 
 def salt_generator(url)
 	agent = Mechanize.new
+	authors = Array['Kaz', '(^o^)', 'Phantom.of.the.server', 'Seravy', 'Googoo64']
 
 	# SEC 1: SIGN IN
 	def signin(main_url, mech_agent, email, pass)
@@ -25,7 +26,7 @@ def salt_generator(url)
 
 		signin_form['authenticate'] = 'signin'
 		signin_form['email'] = email
-		signin_form['pword'] = pass
+		signin_form['pword'] = pword
 		return signin_form
 	end
 
@@ -69,12 +70,23 @@ def salt_generator(url)
 				return winrate_str.to_f
 			end			
 		end
-
+		p stats_hsh
 		p1_winrate = winrate_getter(stats_hsh['p1winrate'])
 		p2_winrate = winrate_getter(stats_hsh['p2winrate'])
-
 		# DECIDING WHO TO BET ON 
-		selectedplayer = (p1_winrate < p2_winrate) ? 'player1' : 'player2'
+		if p1.include? "Karin"
+			selectedplayer = "player1"
+			hasKarin = true
+		elsif p2.include? "Karin"
+			hasKarin = true
+			selectedplayer = 'player2'
+		elsif authors.include? stats_hsh['p1author']
+			selectedplayer = 'player1'
+		elsif authors.include? stats_hsh['p2author']
+			selectedplayer = 'player2'
+		else
+			selectedplayer = (p1_winrate < p2_winrate) ? 'player1' : 'player2'
+		end	
 		accounts_hsh = {}
 
 
@@ -89,7 +101,11 @@ def salt_generator(url)
 			(curr_salt<10000000) ? 10000 :
 			(curr_salt<20000000) ? 15000 :
 			20000
-		wager = wager.round
+		if hasKarin
+			wager = curr_salt
+		else
+			wager = wager.round
+		end
 
 		# PREAMBLE TO THE BET
 		p "Signed in as #{ARGV[0]}",
