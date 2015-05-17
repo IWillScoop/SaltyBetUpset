@@ -26,7 +26,7 @@ def salt_generator(url)
 
 		signin_form['authenticate'] = 'signin'
 		signin_form['email'] = email
-		signin_form['pword'] = pword
+		signin_form['pword'] = pass
 		return signin_form
 	end
 
@@ -70,10 +70,10 @@ def salt_generator(url)
 				return winrate_str.to_f
 			end			
 		end
-		p stats_hsh
 		p1_winrate = winrate_getter(stats_hsh['p1winrate'])
 		p2_winrate = winrate_getter(stats_hsh['p2winrate'])
 		# DECIDING WHO TO BET ON 
+		# IWS - Messy, still learning ruby Kappa
 		if p1.include? "Karin"
 			selectedplayer = "player1"
 			hasKarin = true
