@@ -86,11 +86,11 @@ def salt_generator(url)
 			selectedplayer = (p1_winrate > p2_winrate) ? 'player1' : 'player2'
 			hasKarin = true
 			reason = 'Karin Stat Bet'
-		elsif (karins.include? p1) || (p1.include? 'PMSTwin')
+		elsif karins.include? p1
 			selectedplayer = "player1"
 			hasKarin = true
 			reason = 'Karin Bet'
-		elsif (karins.include? p2) || (p2.include? 'PMSTwin')
+		elsif karins.include? p2
 			hasKarin = true
 			selectedplayer = 'player2'
 			reason = 'Karin Bet'
