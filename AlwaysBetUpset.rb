@@ -10,8 +10,10 @@
 
 def salt_generator(url)
 	agent = Mechanize.new
-	authors = Array['Kaz', '(^o^)', 'Phantom.of.the.server', 'Seravy', 'Googoo64']
-
+	authors = Array['Kaz', '(^o^)', 'Phantom.of.the.server', 'Seravy', 'Googoo64', 'Spacemouse', 'The_none', 'Rakurai', 'Iqs']
+	karins = Array['Blue eyes white karin', 'Dark karin', 'Dark karin EX2', 'Karin CVS', 'Karin kanzuki', 'Sakura&karin', 'PMSTwin']
+	sakuras = Array['Bc-sakura', 'Cvs sakura', 'Dark sakura', 'Master sakura', 'Pocket Sakura']
+	mamis = Array['Mami', 'Mami EX', 'Megamami', 'Megamami EX2']
 	# SEC 1: SIGN IN
 	def signin(main_url, mech_agent, email, pass)
 		signin = '/authenticate?signin=1'
@@ -71,24 +73,61 @@ def salt_generator(url)
 			end			
 		end
 		p1_winrate = winrate_getter(stats_hsh['p1winrate'])
+		p1_author = stats_hsh['p1author']
+		p1_palette = stats_hsh['p1palette']
 		p2_winrate = winrate_getter(stats_hsh['p2winrate'])
+		p2_author = stats_hsh['p2author']
+		p2_palette = stats_hsh['p1palette']
+		reason = ''
+		p stats_hsh
 		# DECIDING WHO TO BET ON 
 		# IWS - Messy, still learning ruby Kappa
-		if p1.include? "Karin"
+		if (karins.include? p1) && (karins.include? p2)
+			selectedplayer = (p1_winrate > p2_winrate) ? 'player1' : 'player2'
+			hasKarin = true
+			reason = 'Karin Stat Bet'
+		elsif (karins.include? p1) || (p1.include? 'PMSTwin')
 			selectedplayer = "player1"
 			hasKarin = true
-		elsif p2.include? "Karin"
+			reason = 'Karin Bet'
+		elsif (karins.include? p2) || (p2.include? 'PMSTwin')
 			hasKarin = true
 			selectedplayer = 'player2'
-		elsif authors.include? stats_hsh['p1author']
+			reason = 'Karin Bet'
+		elsif (sakuras.include? p1) && (sakuras.include? p2)
+			selectedplayer = (p1_winrate > p2_winrate) ? 'player1' : 'player2'
+			reason = 'Sakura Stat Bet'
+		elsif (sakuras.include? p1)
+			selectedplayer = "player1"
+			reason = 'Sakura Bet'
+		elsif (sakuras.include? p2)
+			selectedplayer = "player2"
+			reason = 'Sakura Bet'
+		elsif (mamis.include? p1) && (mamis.include? p2)
+			selectedplayer = (p1_winrate > p2_winrate) ? 'player1' : 'player2'
+			reason = 'Mami Stat Bet'
+		elsif (mamis.include? p1)
+			selectedplayer = "player1"
+			reason = 'Mami Bet'
+		elsif (mamis.include? p2)
+			selectedplayer = "player2"
+			reason = 'Mami Bet'
+		elsif (p1_palette == '12')
 			selectedplayer = 'player1'
-		elsif authors.include? stats_hsh['p2author']
+			reason = '12 Palette Bet'
+		elsif (p2_palette == '12')
 			selectedplayer = 'player2'
+			reason = '12 Palette Bet'
+		elsif authors.include? p1_author
+			selectedplayer = 'player1'
+			reason = 'Author Bet'
+		elsif authors.include? p2_author
+			selectedplayer = 'player2'
+			reason = 'Author Bet'
 		else
 			selectedplayer = (p1_winrate < p2_winrate) ? 'player1' : 'player2'
+			reason = 'Upset Bet'
 		end	
-		accounts_hsh = {}
-
 
 		# CURRENT SALT BALANCE AND HOW MUCH TO BET
 		curr_salt = main_page.search('#balance')[0].text.gsub(',','').to_i # How much Salt I currently have
@@ -111,9 +150,9 @@ def salt_generator(url)
 		p "Signed in as #{ARGV[0]}",
 		"Bets are '#{bet_status}'",
 		"Current balance: $#{curr_salt}",
-		"Player 1: '#{p1}' with win ratio of #{p1_winrate}",
-		"Player 2: '#{p2}' with win ratio of #{p2_winrate}",
-		"BOT WILL BET $#{wager} ON #{selectedplayer}...",
+		"Player 1: '#{p1}' by #{p1_author} with win ratio of #{p1_winrate}",
+		"Player 2: '#{p2}' by #{p2_author} with win ratio of #{p2_winrate}",
+		"BOT WILL BET $#{wager} ON #{selectedplayer}... Reason: #{reason}...",
 		'==='
 
 		# PLACE THE BET AND PRINT CONFIRMATION
